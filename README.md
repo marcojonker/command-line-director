@@ -1,5 +1,3 @@
-[![npm version](https://badge.fury.io/js/data-elevator.svg)](https://badge.fury.io/js/data-elevator)
-
 # COMMAND LINE DIRECTOR #
 
 The command line director give direction to you command line arguments. With the command line director you can configure, validate and direct the command line argument supported by your nodejs command line application.
