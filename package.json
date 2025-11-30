@@ -1,6 +1,6 @@
 {
   "name": "command-line-director",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Gives direction to you nodejs command line application",
   "main": "./lib/command-line-director.js",
   "keywords": [
@@ -39,6 +39,6 @@
     "mocha": "^9.2.2"
   },
   "engines": {
-    "node": ">=12.10.0"
+    "node": ">=18.0.0"
   }
 }
