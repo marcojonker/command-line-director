@@ -1,15 +1,23 @@
-const CommandLineArgumentDataType = require('./command-line-argument-data-type')
-const CommandLineArgumentType = require('./command-line-argument-type')
-const Command = require('./command')
 
-class CommandLine {
+import { Command } from './command'
+import { CommandLineArgumentDataType } from './command-line-argument-data-type'
+import { CommandLineArgumentType } from './command-line-argument-type'
+import { CommandLineArgument } from './command-line-argument'
+import { ArgumentLookup } from './argument-lookup'
+
+export class CommandLine {
+  public identifier: string
+  public title: string
+  public description: string
+  public commandLineArguments: CommandLineArgument[]
+
   /**
      * CommandLine constructor
      * @param identifier - string
      * @param commandLineArguments - array
      * @thows Error
      */
-  constructor (identifier, title, description, commandLineArguments) {
+  constructor (identifier: string, title: string, description: string, commandLineArguments: CommandLineArgument[]) {
     this.identifier = identifier
     this.title = title
     this.description = description
@@ -26,7 +34,7 @@ class CommandLine {
      * @result object
      */
 
-  _parseDataType (value, dataType) {
+  private parseDataType (value: any, dataType: CommandLineArgumentDataType) {
     let parsedValue = null
 
     if (value !== undefined && value !== null) {
@@ -62,8 +70,8 @@ class CommandLine {
      * @result command
      * @throws Error
      */
-  commandFromLookup (argumentLookup) {
-    const result = {}
+  commandFromLookup (argumentLookup: ArgumentLookup): Command {
+    const result = new Map<string, any>()
     const values = argumentLookup.values
     const keyValues = argumentLookup.keyValues
     let valueIndex = 0
@@ -71,14 +79,14 @@ class CommandLine {
     // Check all the arguments
     this.commandLineArguments.forEach((arg) => {
       if (arg.type === CommandLineArgumentType.KeyValue) {
-        if (keyValues[arg.argumentName] !== undefined) {
-          result[arg.propertyName] = keyValues[arg.argumentName]
-        } else if (keyValues[arg.alias] !== undefined) {
-          result[arg.propertyName] = keyValues[arg.alias]
+        if (arg.argumentName &&keyValues.has(arg.argumentName)) {
+          result.set(arg.propertyName, keyValues.get(arg.argumentName))
+        } else if (arg.alias && keyValues.has(arg.alias)) {
+          result.set(arg.propertyName, keyValues.get(arg.alias))
         }
       } else if (arg.type === CommandLineArgumentType.Value) {
         if (values.length > valueIndex) {
-          result[arg.propertyName] = values[valueIndex]
+          result.set(arg.propertyName, values[valueIndex])
           valueIndex++
         }
       } else {
@@ -86,33 +94,33 @@ class CommandLine {
       }
 
       // Set the default value if avaiable
-      if (result[arg.propertyName] === undefined && arg.defaultValue !== undefined) {
-        result[arg.propertyName] = arg.defaultValue
+      if (result.has(arg.propertyName) === false && arg.defaultValue !== null) {
+        result.set(arg.propertyName, arg.defaultValue)
       }
 
       // Parse data to the correct data type
-      if (result[arg.propertyName] !== undefined) {
-        result[arg.propertyName] = this._parseDataType(result[arg.propertyName], arg.dataType)
+      if (result.has(arg.propertyName)) {
+        result.set(arg.propertyName, this.parseDataType(result.get(arg.propertyName), arg.dataType))
       }
     })
 
     // Check all the arguments
     this.commandLineArguments.forEach(function (arg) {
       // Check if required field exists
-      if (arg.required === true && (result[arg.propertyName] === undefined || result[arg.propertyName] === null)) {
+      if (arg.required === true && (result.get(arg.propertyName) === undefined || result.get(arg.propertyName) === null)) {
         throw new Error(`Required field '${arg.propertyName}' is missing.`)
       }
 
       // Check if value is allowed
-      if (arg.allowedValues && (arg.required === true || (result[arg.propertyName] !== undefined && result[arg.propertyName] !== null))) {
-        if (arg.allowedValues.indexOf(result[arg.propertyName]) === -1) {
+      if (arg.allowedValues && (arg.required === true || (result.has(arg.propertyName) && result.get(arg.propertyName) !== null))) {
+        if (arg.allowedValues.indexOf(result.get(arg.propertyName)) === -1) {
           throw new Error(`Value for field '${arg.propertyName}' is not allowed.`)
         }
       };
 
       // Check if value meets regex
-      if (arg.regularExpression && (arg.required === true || (result[arg.propertyName] !== undefined && result[arg.propertyName] !== null))) {
-        if (!arg.regularExpression.test(result[arg.propertyName])) {
+      if (arg.regularExpression && (arg.required === true || (result.has(arg.propertyName) && result.get(arg.propertyName) !== null))) {
+        if (!arg.regularExpression.test(result.get(arg.propertyName))) {
           throw new Error(`Value for field field '${arg.propertyName}' is invalid.`)
         }
       }
@@ -122,4 +130,3 @@ class CommandLine {
   }
 }
 
-module.exports = CommandLine

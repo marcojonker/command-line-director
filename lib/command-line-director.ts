@@ -1,7 +1,13 @@
-const Command = require('./command')
+import { CommandLine } from './command-line';
+import { Command } from './command';
+import { ArgumentLookup } from './argument-lookup';
 
-class CommandLineDirector {
-  constructor (title, description, commandLines) {
+export class CommandLineDirector {
+  private title: string;
+  private description: string;
+  private commandLines: CommandLine[];
+
+  constructor (title: string, description: string, commandLines: CommandLine[]) {
     this.title = title
     this.description = description
     if (Array.isArray(commandLines)) {
@@ -11,34 +17,31 @@ class CommandLineDirector {
     }
   }
 
-  _removeQuotes (text) {
+  private removeQuotes(text: string): string {
     return text.replace(/['"]+/g, '')
   }
 
-  _createArgumentLookupFromProcessArguments (cmdArguments) {
-    const lookup = {
-      values: [],
-      keyValues: {}
-    }
+  private createArgumentLookupFromProcessArguments (cmdArguments: string[]): ArgumentLookup {
+    const lookup = new ArgumentLookup()
 
     cmdArguments.forEach((cmdArgument) => {
       const keyValue = cmdArgument.split('=')
       // Flag of key value type
       if (typeof keyValue[0] === 'string' && keyValue[0].charAt(0) === '-') {
-        const value = keyValue.length === 2 ? this._removeQuotes(keyValue[1]) : true
+        const value = keyValue.length === 2 ? this.removeQuotes(keyValue[1]) : true
         const keyName = keyValue[0]
-        lookup.keyValues[keyName] = value
+        lookup.keyValues.set(keyName, value)
         // Value type
       } else {
-        lookup.values.push(this._removeQuotes(cmdArgument))
+        lookup.values.push(this.removeQuotes(cmdArgument))
       }
     })
 
     return lookup
   }
 
-  parseArguments (cmdArguments, verbose) {
-    const lookup = this._createArgumentLookupFromProcessArguments(cmdArguments)
+  parseArguments (cmdArguments: string[], verbose: boolean): Command | null {
+    const lookup = this.createArgumentLookupFromProcessArguments(cmdArguments)
     let command = null
 
     for (let i = 0; i < this.commandLines.length; i++) {
@@ -46,7 +49,7 @@ class CommandLineDirector {
       try {
         command = commandLine.commandFromLookup(lookup)
         break
-      } catch (error) {
+      } catch (error: any) {
         if (verbose) {
           console.info(error.message)
         }
@@ -57,7 +60,7 @@ class CommandLineDirector {
     return command
   }
 
-  parse (verbose) {
+  parse (verbose: boolean): Command | null {
     return this.parseArguments(process.argv.slice(2), verbose)
   }
 
@@ -65,19 +68,19 @@ class CommandLineDirector {
     let help = '\r\n=======================================================================\r\n'
     help += `\r\n${this.title.toUpperCase()}\r\n${this.description}\r\n\r\n`
 
-    this.commandLines.forEach((commandLine) => {
+    for (const commandLine of this.commandLines) {
       help += '-----------------------------------------------------------------------\r\n'
       help += `${commandLine.title.toUpperCase()} - ${commandLine.description}\r\n\r\n`
 
-      commandLine.commandLineArguments.forEach((argument) => {
+
+      for (const argument of commandLine.commandLineArguments) {
         help += `${argument.toString()}\r\n`
-      })
+      }
       help += '\r\n'
-    })
+    }
 
     help += '=======================================================================\r\n'
     return help
   }
 }
 
-module.exports = CommandLineDirector

@@ -1,8 +1,8 @@
-const CommandLineArgumentDataType = require('./command-line-argument-data-type')
-const CommandLineArgumentType = require('./command-line-argument-type')
-const CommandLineArgument = require('./command-line-argument')
+import { CommandLineArgument } from "./command-line-argument"
+import { CommandLineArgumentDataType } from "./command-line-argument-data-type"
+import { CommandLineArgumentType } from "./command-line-argument-type"
 
-class CommandLineArgumentFactory {
+export class CommandLineArgumentFactory {
     /**
      * Create string argument
      * Examples:
@@ -14,11 +14,19 @@ class CommandLineArgumentFactory {
      * @param required - boolean
      * @param argumentName - string
      * @param alias - string
-     * @param defaultValue - string
+     * @param defaultValue - any
      * @param allowedValues
      * @param regularExpression
      */
-    keyValueArgument(propertyName, description, required, argumentName, alias, defaultValue, allowedValues, regularExpression) {
+    keyValueArgument(
+        propertyName: string, 
+        description: string, 
+        required: boolean, 
+        argumentName: string, 
+        alias: string, 
+        defaultValue: any = null, 
+        allowedValues: any = null, 
+        regularExpression: RegExp | null = null) {
         return new CommandLineArgument(
             propertyName,
             required,
@@ -43,7 +51,7 @@ class CommandLineArgumentFactory {
      * @param argumentName - string
      * @param alias - string
      */
-    flagArgument(propertyName, description, argumentName, alias) {
+    flagArgument(propertyName: string, description: string, argumentName: string, alias: string) {
         return new CommandLineArgument(
             propertyName,
             false,
@@ -68,7 +76,12 @@ class CommandLineArgumentFactory {
      * @param allowedValues
      * @param regularExpression
      */
-    valueArgument(propertyName, description, required, allowedValues, regularExpression) {
+    valueArgument(
+        propertyName: string, 
+        description: string, 
+        required: boolean, 
+        allowedValues: any = null, 
+        regularExpression: RegExp | null = null) {
         return new CommandLineArgument(
             propertyName,
             required,
@@ -82,5 +95,3 @@ class CommandLineArgumentFactory {
             description)
     }
 }
-
-module.exports = CommandLineArgumentFactory

@@ -1,21 +1,29 @@
-const CommandLineArgumentDataType = require('./command-line-argument-data-type')
-const CommandLineArgumentType = require('./command-line-argument-type')
+import { CommandLineArgumentDataType } from './command-line-argument-data-type'
+import { CommandLineArgumentType } from './command-line-argument-type'
 
-class CommandLineArgument {
-  /**
-     * CommandLineArgument Constructor
-     * @param propertyName - string
-     * @param required - boolean
-     * @param argumentName - string
-     * @param alias - string
-     * @param dataType - CommandLineArgumentDataType
-     * @param type - CommandLineArgumentType
-     * @param defaultValue
-     * @param allowedValues
-     * @param regularExpression
-     * @param description
-     */
-  constructor (propertyName, required, argumentName, alias, dataType, type, defaultValue, allowedValues, regularExpression, description) {
+export class CommandLineArgument {
+  public propertyName: string
+  public required: boolean
+  public argumentName: string | null
+  public alias: string | null
+  public dataType: CommandLineArgumentDataType
+  public type: CommandLineArgumentType
+  public defaultValue: any
+  public allowedValues: string[]
+  public regularExpression: RegExp | null
+  public description: string | null
+
+  constructor(
+    propertyName: string, 
+    required: boolean, 
+    argumentName: string | null, 
+    alias: string | null, 
+    dataType: CommandLineArgumentDataType | null, 
+    type: CommandLineArgumentType, 
+    defaultValue: any = null, 
+    allowedValues: string[] | null = null, 
+    regularExpression: RegExp | null = null, 
+    description: string | null = null) {
     if (!propertyName) {
       throw new Error("'propertyName' parameter not defined.")
     }
@@ -39,11 +47,11 @@ class CommandLineArgument {
     this.propertyName = propertyName
     this.required = Boolean(required)
     this.argumentName = argumentName
-    this.alias = (alias !== undefined) ? alias : null
+    this.alias = (alias !== undefined) ? alias : ''
     this.dataType = dataType || CommandLineArgumentDataType.String
     this.type = type
     this.defaultValue = defaultValue
-    this.allowedValues = allowedValues || null
+    this.allowedValues = allowedValues || []
     this.regularExpression = regularExpression || null
     this.description = description
   }
@@ -81,4 +89,3 @@ class CommandLineArgument {
   }
 }
 
-module.exports = CommandLineArgument

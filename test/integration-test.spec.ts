@@ -1,7 +1,8 @@
 var assert = require('assert');
-const CommandLineDirector = require('../lib/command-line-director')
-const CommandLine = require('../lib/command-line')
-const CommandLineArgumentFactory = require('../lib/command-line-argument-factory')
+
+import { CommandLineArgumentFactory } from '../lib/command-line-argument-factory';
+import { CommandLine } from '../lib/command-line';
+import { CommandLineDirector } from '../lib/command-line-director';
 
 describe('Integration test', function () {
   const argumentFactory = new CommandLineArgumentFactory();
@@ -23,10 +24,10 @@ describe('Integration test', function () {
 
     // required value set
     command = commandLineDirector.parseArguments(['--param1=test'], true)
-    assert.equal(command.values['param1'], 'test');
-    assert.equal(command.values['param2'], 'defaultParam2');
-    assert.equal(command.values['param3'], '100');
-    assert.equal(command.values['param4'], undefined);
+    assert.equal(command?.values.get('param1'), 'test');
+    assert.equal(command?.values.get('param2'), 'defaultParam2');
+    assert.equal(command?.values.get('param3'), '100');
+    assert.equal(command?.values.get('param4'), undefined);
 
     // allwed values invalid
     command = commandLineDirector.parseArguments(['--param1=test', '--param2=invalid'], true)
@@ -34,8 +35,8 @@ describe('Integration test', function () {
 
     // allwed values valid
     command = commandLineDirector.parseArguments(['--param1=test', '--param2=test'], true)
-    assert.equal(command.values['param1'], 'test');
-    assert.equal(command.values['param2'], 'test');
+    assert.equal(command?.values.get('param1'), 'test');
+    assert.equal(command?.values.get('param2'), 'test');
 
     // regex invalid
     command = commandLineDirector.parseArguments(['--param1=test', '--param3=test'], true)
@@ -43,28 +44,28 @@ describe('Integration test', function () {
 
     // regex valid
     command = commandLineDirector.parseArguments(['--param1=test', '--param3=200'], true)
-    assert.equal(command.values['param1'], 'test');
-    assert.equal(command.values['param3'], '200');
+    assert.equal(command?.values.get('param1'), 'test');
+    assert.equal(command?.values.get('param3'), '200');
 
     // not required param
     command = commandLineDirector.parseArguments(['--param1=test', '--param4=test'], true)
-    assert.equal(command.values['param1'], 'test');
-    assert.equal(command.values['param4'], 'test');
+    assert.equal(command?.values.get('param1'), 'test');
+    assert.equal(command?.values.get('param4'), 'test');
 
     // alias
     command = commandLineDirector.parseArguments(['-p1=test1', '-p2=test', '-p3=300', '-p4=test4'], true)
-    assert.equal(command.values['param1'], 'test1');
-    assert.equal(command.values['param2'], 'test');
-    assert.equal(command.values['param3'], '300');
-    assert.equal(command.values['param4'], 'test4');
+    assert.equal(command?.values.get('param1'), 'test1');
+    assert.equal(command?.values.get('param2'), 'test');
+    assert.equal(command?.values.get('param3'), '300');
+    assert.equal(command?.values.get('param4'), 'test4');
   
     // strip unknown param
     command = commandLineDirector.parseArguments(['-p1=test1', '-p2=test', '-p3=300', '-p4=test4', '--param5=test5'], true)
-    assert.equal(command.values['param1'], 'test1');
-    assert.equal(command.values['param2'], 'test');
-    assert.equal(command.values['param3'], '300');
-    assert.equal(command.values['param4'], 'test4');
-    assert.equal(command.values['param5'], undefined);
+    assert.equal(command?.values.get('param1'), 'test1');
+    assert.equal(command?.values.get('param2'), 'test');
+    assert.equal(command?.values.get('param3'), '300');
+    assert.equal(command?.values.get('param4'), 'test4');
+    assert.equal(command?.values.get('param5'), undefined);
   });
 
   it('should handle flag key value arguments correct', () => {
@@ -77,13 +78,13 @@ describe('Integration test', function () {
     const commandLineDirector = new CommandLineDirector('title', 'description', commandLines)
   
     let command = commandLineDirector.parseArguments([''], true)
-    assert.equal(command.values['param1'], false);
+    assert.equal(command?.values.get('param1'), false);
 
     command = commandLineDirector.parseArguments(['--param1'], true)
-    assert.equal(command.values['param1'], true);
+    assert.equal(command?.values.get('param1'), true);
 
     command = commandLineDirector.parseArguments(['-p1'], true)
-    assert.equal(command.values['param1'], true);
+    assert.equal(command?.values.get('param1'), true);
   });
 
   it('should handle string value arguments correct', () => {
@@ -105,19 +106,19 @@ describe('Integration test', function () {
     assert.equal(command, null);
 
     command = commandLineDirector.parseArguments(['value1', 'value4'], true)
-    assert.equal(command.values['param1'], 'value1');
-    assert.equal(command.values['param2'], 'value4');
+    assert.equal(command?.values.get('param1'), 'value1');
+    assert.equal(command?.values.get('param2'), 'value4');
 
     command = commandLineDirector.parseArguments(['value1', 'value3', 'value6'], true)
-    assert.equal(command.values['param1'], 'value1');
-    assert.equal(command.values['param2'], 'value3');
-    assert.equal(command.values['param3'], 'value6');
+    assert.equal(command?.values.get('param1'), 'value1');
+    assert.equal(command?.values.get('param2'), 'value3');
+    assert.equal(command?.values.get('param3'), 'value6');
 
     command = commandLineDirector.parseArguments(['value1', 'value3', 'value6', '"http://url.test"'], true)
-    assert.equal(command.values['param1'], 'value1');
-    assert.equal(command.values['param2'], 'value3');
-    assert.equal(command.values['param3'], 'value6');
-    assert.equal(command.values['param4'], 'http://url.test');
+    assert.equal(command?.values.get('param1'), 'value1');
+    assert.equal(command?.values.get('param2'), 'value3');
+    assert.equal(command?.values.get('param3'), 'value6');
+    assert.equal(command?.values.get('param4'), 'http://url.test');
   });  
 
   it('should generate a help text', () => {
@@ -179,20 +180,20 @@ describe('Integration test', function () {
     const helpText = commandLineDirector.generateHelp();
 
     let command = commandLineDirector.parseArguments(['list', '-d'], true)
-    assert.equal(command.identifier, 'list-identifier');
-    assert.equal(command.values['command'], 'list');
-    assert.equal(command.values['delete'], true);
+    assert.equal(command?.identifier, 'list-identifier');
+    assert.equal(command?.values.get('command'), 'list');
+    assert.equal(command?.values.get('delete'), true);
 
     command = commandLineDirector.parseArguments(['display', '--all', '--identifier=12'], true)
-    assert.equal(command.identifier, 'open-identifier');
-    assert.equal(command.values['command'], 'display');
-    assert.equal(command.values['all'], true);
-    assert.equal(command.values['id'], 12);
+    assert.equal(command?.identifier, 'open-identifier');
+    assert.equal(command?.values.get('command'), 'display');
+    assert.equal(command?.values.get('all'), true);
+    assert.equal(command?.values.get('id'), 12);
 
     command = commandLineDirector.parseArguments(['update', '-a', '-id=100'], true)
-    assert.equal(command.identifier, 'update-identifier');
-    assert.equal(command.values['command'], 'update');
-    assert.equal(command.values['all'], true);
-    assert.equal(command.values['id'], 100);
+    assert.equal(command?.identifier, 'update-identifier');
+    assert.equal(command?.values.get('command'), 'update');
+    assert.equal(command?.values.get('all'), true);
+    assert.equal(command?.values.get('id'), 100);
   });    
 });
