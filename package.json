@@ -1,6 +1,6 @@
 {
   "name": "command-line-director",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Gives direction to you nodejs command line application",
   "main": "./lib/command-line-director.js",
   "keywords": [
