@@ -1,4 +1,4 @@
-var assert = require('assert');
+const assert = require('assert');
 const CommandLineDirector = require('../lib/command-line-director')
 const CommandLine = require('../lib/command-line')
 const CommandLineArgumentFactory = require('../lib/command-line-argument-factory')
@@ -177,6 +177,7 @@ describe('Integration test', function () {
   
     const commandLineDirector = new CommandLineDirector('File cli', 'file cli description', commandLines)
     const helpText = commandLineDirector.generateHelp();
+    assert.equal(helpText.length > 0, true)
 
     let command = commandLineDirector.parseArguments(['list', '-d'], true)
     assert.equal(command.identifier, 'list-identifier');
