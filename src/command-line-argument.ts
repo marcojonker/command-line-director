@@ -8,8 +8,8 @@ export class CommandLineArgument {
   public alias: string | null
   public dataType: CommandLineArgumentDataType
   public type: CommandLineArgumentType
-  public defaultValue: any
-  public allowedValues: string[]
+  public defaultValue: string | number | boolean | null
+  public allowedValues: string[] | number[] | boolean[] | null
   public regularExpression: RegExp | null
   public description: string | null
 
@@ -20,8 +20,8 @@ export class CommandLineArgument {
     alias: string | null, 
     dataType: CommandLineArgumentDataType | null, 
     type: CommandLineArgumentType, 
-    defaultValue: any = null, 
-    allowedValues: string[] | null = null, 
+    defaultValue: string | number | boolean | null = null, 
+    allowedValues: string[] | number[] | boolean[] | null = null, 
     regularExpression: RegExp | null = null, 
     description: string | null = null) {
     if (!propertyName) {
@@ -48,11 +48,11 @@ export class CommandLineArgument {
     this.required = Boolean(required)
     this.argumentName = argumentName
     this.alias = (alias !== undefined) ? alias : ''
-    this.dataType = dataType || CommandLineArgumentDataType.String
+    this.dataType = dataType ?? CommandLineArgumentDataType.String
     this.type = type
     this.defaultValue = defaultValue
-    this.allowedValues = allowedValues || []
-    this.regularExpression = regularExpression || null
+    this.allowedValues = allowedValues ?? []
+    this.regularExpression = regularExpression ?? null
     this.description = description
   }
 

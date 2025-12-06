@@ -3,7 +3,7 @@ import { CommandLineArgumentDataType } from "./command-line-argument-data-type"
 import { CommandLineArgumentType } from "./command-line-argument-type"
 
 export class CommandLineArgumentFactory {
-    /**
+    /**s
      * Create string argument
      * Examples:
      * --dir="/var/www/test"
@@ -24,8 +24,8 @@ export class CommandLineArgumentFactory {
         required: boolean, 
         argumentName: string, 
         alias: string, 
-        defaultValue: any = null, 
-        allowedValues: any = null, 
+        defaultValue: string | number | boolean | null = null, 
+        allowedValues: string[] | number[] | boolean[] | null = null, 
         regularExpression: RegExp | null = null) {
         return new CommandLineArgument(
             propertyName,
@@ -80,7 +80,7 @@ export class CommandLineArgumentFactory {
         propertyName: string, 
         description: string, 
         required: boolean, 
-        allowedValues: any = null, 
+        allowedValues: string[] | number[] | boolean[] | null = null, 
         regularExpression: RegExp | null = null) {
         return new CommandLineArgument(
             propertyName,

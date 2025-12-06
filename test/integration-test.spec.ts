@@ -1,8 +1,7 @@
-var assert = require('assert');
-
-import { CommandLineArgumentFactory } from '../lib/command-line-argument-factory';
-import { CommandLine } from '../lib/command-line';
-import { CommandLineDirector } from '../lib/command-line-director';
+import { describe, it, expect } from '@jest/globals';
+import { CommandLineArgumentFactory } from '../src/command-line-argument-factory';
+import { CommandLine } from '../src/command-line';
+import { CommandLineDirector } from '../src/command-line-director';
 
 describe('Integration test', function () {
   const argumentFactory = new CommandLineArgumentFactory();
@@ -20,52 +19,52 @@ describe('Integration test', function () {
     const commandLineDirector = new CommandLineDirector('title', 'description', commandLines)
   
     let command = commandLineDirector.parseArguments([''], true)
-    assert.equal(command, null);
+    expect(command).toBe(null);
 
     // required value set
     command = commandLineDirector.parseArguments(['--param1=test'], true)
-    assert.equal(command?.values.get('param1'), 'test');
-    assert.equal(command?.values.get('param2'), 'defaultParam2');
-    assert.equal(command?.values.get('param3'), '100');
-    assert.equal(command?.values.get('param4'), undefined);
+    expect(command?.values.get('param1')).toBe('test');
+    expect(command?.values.get('param2')).toBe('defaultParam2');
+    expect(command?.values.get('param3')).toBe('100');
+    expect(command?.values.get('param4')).toBe(undefined);
 
     // allwed values invalid
     command = commandLineDirector.parseArguments(['--param1=test', '--param2=invalid'], true)
-    assert.equal(command, null);
+    expect(command).toBe(null);
 
     // allwed values valid
     command = commandLineDirector.parseArguments(['--param1=test', '--param2=test'], true)
-    assert.equal(command?.values.get('param1'), 'test');
-    assert.equal(command?.values.get('param2'), 'test');
+    expect(command?.values.get('param1')).toBe('test');
+    expect(command?.values.get('param2')).toBe('test');
 
     // regex invalid
     command = commandLineDirector.parseArguments(['--param1=test', '--param3=test'], true)
-    assert.equal(command, null);
+    expect(command).toBe(null);
 
     // regex valid
     command = commandLineDirector.parseArguments(['--param1=test', '--param3=200'], true)
-    assert.equal(command?.values.get('param1'), 'test');
-    assert.equal(command?.values.get('param3'), '200');
+    expect(command?.values.get('param1')).toBe('test');
+    expect(command?.values.get('param3')).toBe('200');
 
     // not required param
     command = commandLineDirector.parseArguments(['--param1=test', '--param4=test'], true)
-    assert.equal(command?.values.get('param1'), 'test');
-    assert.equal(command?.values.get('param4'), 'test');
+    expect(command?.values.get('param1')).toBe('test');
+    expect(command?.values.get('param4')).toBe('test');
 
     // alias
     command = commandLineDirector.parseArguments(['-p1=test1', '-p2=test', '-p3=300', '-p4=test4'], true)
-    assert.equal(command?.values.get('param1'), 'test1');
-    assert.equal(command?.values.get('param2'), 'test');
-    assert.equal(command?.values.get('param3'), '300');
-    assert.equal(command?.values.get('param4'), 'test4');
+    expect(command?.values.get('param1')).toBe('test1');
+    expect(command?.values.get('param2')).toBe('test');
+    expect(command?.values.get('param3')).toBe('300');
+    expect(command?.values.get('param4')).toBe('test4');
   
     // strip unknown param
     command = commandLineDirector.parseArguments(['-p1=test1', '-p2=test', '-p3=300', '-p4=test4', '--param5=test5'], true)
-    assert.equal(command?.values.get('param1'), 'test1');
-    assert.equal(command?.values.get('param2'), 'test');
-    assert.equal(command?.values.get('param3'), '300');
-    assert.equal(command?.values.get('param4'), 'test4');
-    assert.equal(command?.values.get('param5'), undefined);
+    expect(command?.values.get('param1')).toBe('test1');
+    expect(command?.values.get('param2')).toBe('test');
+    expect(command?.values.get('param3')).toBe('300');
+    expect(command?.values.get('param4')).toBe('test4');
+    expect(command?.values.get('param5')).toBe(undefined);
   });
 
   it('should handle flag key value arguments correct', () => {
@@ -78,13 +77,13 @@ describe('Integration test', function () {
     const commandLineDirector = new CommandLineDirector('title', 'description', commandLines)
   
     let command = commandLineDirector.parseArguments([''], true)
-    assert.equal(command?.values.get('param1'), false);
+    expect(command?.values.get('param1')).toBe(false);
 
     command = commandLineDirector.parseArguments(['--param1'], true)
-    assert.equal(command?.values.get('param1'), true);
+    expect(command?.values.get('param1')).toBe(true);
 
     command = commandLineDirector.parseArguments(['-p1'], true)
-    assert.equal(command?.values.get('param1'), true);
+    expect(command?.values.get('param1')).toBe(true);
   });
 
   it('should handle string value arguments correct', () => {
@@ -100,25 +99,25 @@ describe('Integration test', function () {
     const commandLineDirector = new CommandLineDirector('title', 'description', commandLines)
   
     let command = commandLineDirector.parseArguments([''], true)
-    assert.equal(command, null);
+    expect(command).toBe(null);
 
     command = commandLineDirector.parseArguments(['value1'], true)
-    assert.equal(command, null);
+    expect(command).toBe(null);
 
     command = commandLineDirector.parseArguments(['value1', 'value4'], true)
-    assert.equal(command?.values.get('param1'), 'value1');
-    assert.equal(command?.values.get('param2'), 'value4');
+    expect(command?.values.get('param1')).toBe('value1');
+    expect(command?.values.get('param2')).toBe('value4');
 
     command = commandLineDirector.parseArguments(['value1', 'value3', 'value6'], true)
-    assert.equal(command?.values.get('param1'), 'value1');
-    assert.equal(command?.values.get('param2'), 'value3');
-    assert.equal(command?.values.get('param3'), 'value6');
+    expect(command?.values.get('param1')).toBe('value1');
+    expect(command?.values.get('param2')).toBe('value3');
+    expect(command?.values.get('param3')).toBe('value6');
 
     command = commandLineDirector.parseArguments(['value1', 'value3', 'value6', '"http://url.test"'], true)
-    assert.equal(command?.values.get('param1'), 'value1');
-    assert.equal(command?.values.get('param2'), 'value3');
-    assert.equal(command?.values.get('param3'), 'value6');
-    assert.equal(command?.values.get('param4'), 'http://url.test');
+    expect(command?.values.get('param1')).toBe('value1');
+    expect(command?.values.get('param2')).toBe('value3');
+    expect(command?.values.get('param3')).toBe('value6');
+    expect(command?.values.get('param4')).toBe('http://url.test');
   });  
 
   it('should generate a help text', () => {
@@ -148,14 +147,14 @@ describe('Integration test', function () {
     const commandLineDirector = new CommandLineDirector('title', 'description', commandLines)
     const helpText = commandLineDirector.generateHelp();
 
-    assert.equal(helpText.includes('TITLE1'), true)
-    assert.equal(helpText.includes('TITLE2'), true)
-    assert.equal(helpText.includes('TITLE3'), true)
-    assert.equal(helpText.includes('TITLE4'), true)
-    assert.equal(helpText.includes('title 1 description'), true)
-    assert.equal(helpText.includes('param1 descriptio'), true)
-    assert.equal(helpText.includes(' R '), true)
-    assert.equal(helpText.includes('--param1,-p1'), true)
+    expect(helpText.includes('TITLE1')).toBe(true)
+    expect(helpText.includes('TITLE2')).toBe(true)
+    expect(helpText.includes('TITLE3')).toBe(true)
+    expect(helpText.includes('TITLE4')).toBe(true)
+    expect(helpText.includes('title 1 description')).toBe(true)
+    expect(helpText.includes('param1 descriptio')).toBe(true)
+    expect(helpText.includes(' R ')).toBe(true)
+    expect(helpText.includes('--param1,-p1')).toBe(true)
   });
 
   it('should handle realworld example correct', () => {
@@ -178,22 +177,23 @@ describe('Integration test', function () {
   
     const commandLineDirector = new CommandLineDirector('File cli', 'file cli description', commandLines)
     const helpText = commandLineDirector.generateHelp();
+    expect(helpText.length > 0).toBe(true)
 
     let command = commandLineDirector.parseArguments(['list', '-d'], true)
-    assert.equal(command?.identifier, 'list-identifier');
-    assert.equal(command?.values.get('command'), 'list');
-    assert.equal(command?.values.get('delete'), true);
+    expect(command?.identifier).toBe('list-identifier');
+    expect(command?.values.get('command')).toBe('list');
+    expect(command?.values.get('delete')).toBe(true);
 
     command = commandLineDirector.parseArguments(['display', '--all', '--identifier=12'], true)
-    assert.equal(command?.identifier, 'open-identifier');
-    assert.equal(command?.values.get('command'), 'display');
-    assert.equal(command?.values.get('all'), true);
-    assert.equal(command?.values.get('id'), 12);
+    expect(command?.identifier).toBe('open-identifier');
+    expect(command?.values.get('command')).toBe('display');
+    expect(command?.values.get('all')).toBe(true);
+    expect(command?.values.get('id')).toBe('12');
 
     command = commandLineDirector.parseArguments(['update', '-a', '-id=100'], true)
-    assert.equal(command?.identifier, 'update-identifier');
-    assert.equal(command?.values.get('command'), 'update');
-    assert.equal(command?.values.get('all'), true);
-    assert.equal(command?.values.get('id'), 100);
+    expect(command?.identifier).toBe('update-identifier');
+    expect(command?.values.get('command')).toBe('update');
+    expect(command?.values.get('all')).toBe(true);
+    expect(command?.values.get('id')).toBe('100');
   });    
 });
