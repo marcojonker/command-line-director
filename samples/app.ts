@@ -1,8 +1,10 @@
-const CommandLineDirector = require('../lib/command-line-director')
-const CommandLine = require('../lib/command-line')
-const CommandLineArgumentFactory = require('../lib/command-line-argument-factory')
+import { CommandLineDirector } from '../src/command-line-director';
+import { CommandLine } from '../src/command-line';
+import { CommandLineArgumentFactory } from '../src/command-line-argument-factory';
 
 class App {
+    private commandLineDirector: CommandLineDirector;
+
     constructor() {
         const argumentFactory = new CommandLineArgumentFactory()
 

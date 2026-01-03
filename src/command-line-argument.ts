@@ -1,28 +1,29 @@
-const CommandLineArgumentDataType = require('./command-line-argument-data-type')
-const CommandLineArgumentType = require('./command-line-argument-type')
+import { CommandLineArgumentDataType } from './command-line-argument-data-type'
+import { CommandLineArgumentType } from './command-line-argument-type'
 
-class CommandLineArgument {
-  /**
-     * CommandLineArgument Constructor
-     * @param propertyName - string
-     * @param required - boolean
-     * @param argumentName - string
-     * @param alias - string
-     * @param dataType - CommandLineArgumentDataType
-     * @param type - CommandLineArgumentType
-     * @param defaultValue
-     * @param allowedValues
-     * @param regularExpression
-     * @param description
-     */
-  constructor (propertyName, required, argumentName, alias, dataType, type, defaultValue, allowedValues, regularExpression, description) {
-    if (!propertyName) {
-      throw new Error("'propertyName' parameter not defined.")
-    }
+export class CommandLineArgument<T extends string | number | boolean> {
+  public propertyName: string
+  public required: boolean
+  public argumentName: string | null
+  public alias: string | null
+  public dataType: CommandLineArgumentDataType
+  public type: CommandLineArgumentType
+  public defaultValue: T | null
+  public allowedValues: T[] | null
+  public regularExpression: RegExp | null
+  public description: string | null
 
-    if (required === undefined || required === null) {
-      throw new Error("'required' parameter not defined.")
-    }
+  constructor(
+    propertyName: string, 
+    required: boolean, 
+    argumentName: string | null, 
+    alias: string | null, 
+    dataType: CommandLineArgumentDataType | null, 
+    type: CommandLineArgumentType, 
+    defaultValue: T | null, 
+    allowedValues: T[] | null, 
+    regularExpression: RegExp | null = null, 
+    description: string | null = null) {
 
     if (type !== CommandLineArgumentType.KeyValue && type !== CommandLineArgumentType.Value) {
       throw new Error("'type' parameter invalid.")
@@ -39,12 +40,12 @@ class CommandLineArgument {
     this.propertyName = propertyName
     this.required = Boolean(required)
     this.argumentName = argumentName
-    this.alias = (alias !== undefined) ? alias : null
-    this.dataType = dataType || CommandLineArgumentDataType.String
+    this.alias = (alias !== undefined) ? alias : ''
+    this.dataType = dataType ?? CommandLineArgumentDataType.String
     this.type = type
     this.defaultValue = defaultValue
-    this.allowedValues = allowedValues || null
-    this.regularExpression = regularExpression || null
+    this.allowedValues = allowedValues ?? []
+    this.regularExpression = regularExpression ?? null
     this.description = description
   }
 
@@ -81,4 +82,3 @@ class CommandLineArgument {
   }
 }
 
-module.exports = CommandLineArgument
