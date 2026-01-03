@@ -1,6 +1,6 @@
 {
   "name": "command-line-director",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Gives direction to you nodejs command line application",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
