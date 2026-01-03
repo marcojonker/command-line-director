@@ -6,10 +6,12 @@ on:
       release-type:
         description: 'Release type to bump'
         required: true
-        default: 'minor'
+        default: 'beta'
         type: choice
         options:
           - minor
+          - patch
+          - beta
           - major
       dry-run:
         description: 'Full dry run: do not push tags or create GitHub release; npm publish will run with --dry-run'
@@ -64,10 +66,15 @@ jobs:
         env:
           GIT_AUTHOR_NAME: github-actions[bot]
           GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          RELEASE_TYPE: ${{ github.event.inputs['release-type'] }}
         run: |
           git config user.name "$GIT_AUTHOR_NAME"
           git config user.email "$GIT_AUTHOR_EMAIL"
-          npm version ${{ github.event.inputs.release-type }} -m "chore(release): %s"
+          if [ "$RELEASE_TYPE" = "beta" ]; then
+            npm version prerelease --preid=beta -m "chore(release): %s"
+          else
+            npm version "$RELEASE_TYPE" -m "chore(release): %s"
+          fi
 
       - name: Ensure NPM token is available
         env:
@@ -94,11 +101,20 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           DRY_RUN: ${{ github.event.inputs['dry-run'] }}
+          RELEASE_TYPE: ${{ github.event.inputs['release-type'] }}
         run: |
           if [ "$DRY_RUN" = "true" ]; then
-            npm publish --dry-run
+            if [ "$RELEASE_TYPE" = "beta" ]; then
+              npm publish --tag beta --dry-run
+            else
+              npm publish --dry-run
+            fi
           else
-            npm publish --access public
+            if [ "$RELEASE_TYPE" = "beta" ]; then
+              npm publish --tag beta --access public
+            else
+              npm publish --access public
+            fi
           fi
 
 
@@ -125,4 +141,4 @@ jobs:
           release_name: Release v${{ steps.get_version.outputs.version }}
           body: "Automated ${{ github.event.inputs.release-type }} release of v${{ steps.get_version.outputs.version }}"
           draft: false
-          prerelease: false
+          prerelease: ${{ github.event.inputs['release-type'] == 'beta' }}
