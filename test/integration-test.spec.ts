@@ -9,10 +9,10 @@ describe('Integration test', function () {
   it('should handle string key value arguments correct', () => {
     const commandLines = [
       new CommandLine('test1', 'title1', 'title1 description', [
-        argumentFactory.keyValueArgument('param1', 'param1 description', true, '--param1', '-p1'),
-        argumentFactory.keyValueArgument('param2', 'param2 description', false, '--param2', '-p2', 'defaultParam2', ['defaultParam2', 'test']),
-        argumentFactory.keyValueArgument('param3', 'param3 description', false, '--param3', '-p3', '100', null, new RegExp('^[0-9]*$')),
-        argumentFactory.keyValueArgument('param4', 'param4 description', false, '--param4', '-p4')
+        argumentFactory.keyStringValueArgument('param1', 'param1 description', true, '--param1', '-p1'),
+        argumentFactory.keyStringValueArgument('param2', 'param2 description', false, '--param2', '-p2', 'defaultParam2', ['defaultParam2', 'test']),
+        argumentFactory.keyStringValueArgument('param3', 'param3 description', false, '--param3', '-p3', '100', null, new RegExp('^[0-9]*$')),
+        argumentFactory.keyStringValueArgument('param4', 'param4 description', false, '--param4', '-p4')
       ]),
     ]
   
@@ -89,10 +89,10 @@ describe('Integration test', function () {
   it('should handle string value arguments correct', () => {
     const commandLines = [
       new CommandLine('test4', 'title4', 'title 4 description', [
-        argumentFactory.valueArgument('param1', 'param1 description', true, ['value1', 'value2']),
-        argumentFactory.valueArgument('param2', 'param2 description', true, ['value3', 'value4']),
-        argumentFactory.valueArgument('param3', 'param3 description', false, ['value5', 'value6']),
-        argumentFactory.valueArgument('param4', 'param4 description', false),
+        argumentFactory.stringValueArgument('param1', 'param1 description', true, ['value1', 'value2']),
+        argumentFactory.stringValueArgument('param2', 'param2 description', true, ['value3', 'value4']),
+        argumentFactory.stringValueArgument('param3', 'param3 description', false, ['value5', 'value6']),
+        argumentFactory.stringValueArgument('param4', 'param4 description', false),
       ]),
     ]
   
@@ -123,24 +123,24 @@ describe('Integration test', function () {
   it('should generate a help text', () => {
     const commandLines = [
       new CommandLine('test1', 'title1', 'title 1 description', [
-        argumentFactory.keyValueArgument('param1', 'param1 description', true, '--param1', '-p1'),
-        argumentFactory.keyValueArgument('param2', 'param2 description', false, '--param2', '-p2', 'defaultParam2', ['defaultParam2', 'test']),
-        argumentFactory.keyValueArgument('param3', 'param3 description', false, '--param3', '-p3', '100', null, new RegExp('^[0-9]*$')),
-        argumentFactory.keyValueArgument('param4', 'param4 description', false, '--param4', '-p4')
+        argumentFactory.keyStringValueArgument('param1', 'param1 description', true, '--param1', '-p1'),
+        argumentFactory.keyStringValueArgument('param2', 'param2 description', false, '--param2', '-p2', 'defaultParam2', ['defaultParam2', 'test']),
+        argumentFactory.keyStringValueArgument('param3', 'param3 description', false, '--param3', '-p3', '100', null, new RegExp('^[0-9]*$')),
+        argumentFactory.keyStringValueArgument('param4', 'param4 description', false, '--param4', '-p4')
       ]),
       new CommandLine('test2', 'title2', 'title 2 description', [
-        argumentFactory.keyValueArgument('param1', 'param1 description', true, '--param1', '-p1'),
-        argumentFactory.keyValueArgument('param2', 'param2 description', false, '--param2', '-p2', 200, [200, 201]),
-        argumentFactory.keyValueArgument('param3', 'param3 description', false, '--param3', '-p3')
+        argumentFactory.keyStringValueArgument('param1', 'param1 description', true, '--param1', '-p1'),
+        argumentFactory.keyNumberValueArgument('param2', 'param2 description', false, '--param2', '-p2', 200, [200, 201]),
+        argumentFactory.keyStringValueArgument('param3', 'param3 description', false, '--param3', '-p3')
       ]),
       new CommandLine('test3', 'title3', 'title 3 description', [
         argumentFactory.flagArgument('param1', 'param1 description', '--param1', '-p1')
       ]),
       new CommandLine('test4', 'title4', 'title 4 description', [
-        argumentFactory.valueArgument('param1', 'param1 description', true, ['value1', 'value2']),
-        argumentFactory.valueArgument('param2', 'param2 description', true, ['value3', 'value4']),
-        argumentFactory.valueArgument('param3', 'param3 description', false, ['value5', 'value6']),
-        argumentFactory.valueArgument('param4', 'param4 description', false)
+        argumentFactory.stringValueArgument('param1', 'param1 description', true, ['value1', 'value2']),
+        argumentFactory.stringValueArgument('param2', 'param2 description', true, ['value3', 'value4']),
+        argumentFactory.stringValueArgument('param3', 'param3 description', false, ['value5', 'value6']),
+        argumentFactory.stringValueArgument('param4', 'param4 description', false)
       ]),
     ]
 
@@ -160,18 +160,18 @@ describe('Integration test', function () {
   it('should handle realworld example correct', () => {
     const commandLines = [
       new CommandLine('list-identifier', 'List', 'Create a list of items', [
-        argumentFactory.valueArgument('command', 'command', true, ['list']),
+        argumentFactory.stringValueArgument('command', 'command', true, ['list']),
         argumentFactory.flagArgument('delete', 'delete the list', '--delete', '-d'),
       ]),
       new CommandLine('open-identifier', 'Open', 'Open an item', [
-        argumentFactory.valueArgument('command', 'command', true, ['open', 'display']),
+        argumentFactory.stringValueArgument('command', 'command', true, ['open', 'display']),
         argumentFactory.flagArgument('all', 'Open all items', '--all', '-a'),
-        argumentFactory.keyValueArgument('id', 'id to open', false, '--identifier', '-id'),
+        argumentFactory.keyStringValueArgument('id', 'id to open', false, '--identifier', '-id')
       ]),
       new CommandLine('update-identifier', 'Update', 'Updat an item', [
-        argumentFactory.valueArgument('command', 'command', true, ['update']),
+        argumentFactory.stringValueArgument('command', 'command', true, ['update']),
         argumentFactory.flagArgument('all', 'Open all items', '--all', '-a'),
-        argumentFactory.keyValueArgument('id', 'id to open', false, '--identifier', '-id'),
+        argumentFactory.keyStringValueArgument('id', 'id to open', false, '--identifier', '-id')
       ]),
     ]
   

@@ -9,7 +9,7 @@ export class CommandLine {
   public identifier: string
   public title: string
   public description: string
-  public commandLineArguments: CommandLineArgument[]
+  public commandLineArguments: CommandLineArgument<string | number | boolean>[]
 
   /**
      * CommandLine constructor
@@ -17,7 +17,7 @@ export class CommandLine {
      * @param commandLineArguments - array
      * @thows Error
      */
-  constructor (identifier: string, title: string, description: string, commandLineArguments: CommandLineArgument[]) {
+  constructor (identifier: string, title: string, description: string, commandLineArguments: CommandLineArgument<string | number | boolean>[]) {
     this.identifier = identifier
     this.title = title
     this.description = description
@@ -113,7 +113,7 @@ export class CommandLine {
 
       // Check if value is allowed
       if (arg.allowedValues && arg.allowedValues.length > 0 && (arg.required === true || (result.has(arg.propertyName) && result.get(arg.propertyName) !== null))) {
-        if (arg.allowedValues?.indexOf(result.get(arg.propertyName) as never) === -1) {
+        if (arg.allowedValues.indexOf(result.get(arg.propertyName) as never) === -1) {
           throw new Error(`Value for field '${arg.propertyName}' is not allowed.`)
         }
       };

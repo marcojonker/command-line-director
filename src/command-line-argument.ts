@@ -1,15 +1,15 @@
 import { CommandLineArgumentDataType } from './command-line-argument-data-type'
 import { CommandLineArgumentType } from './command-line-argument-type'
 
-export class CommandLineArgument {
+export class CommandLineArgument<T extends string | number | boolean> {
   public propertyName: string
   public required: boolean
   public argumentName: string | null
   public alias: string | null
   public dataType: CommandLineArgumentDataType
   public type: CommandLineArgumentType
-  public defaultValue: string | number | boolean | null
-  public allowedValues: string[] | number[] | boolean[] | null
+  public defaultValue: T | null
+  public allowedValues: T[] | null
   public regularExpression: RegExp | null
   public description: string | null
 
@@ -20,17 +20,10 @@ export class CommandLineArgument {
     alias: string | null, 
     dataType: CommandLineArgumentDataType | null, 
     type: CommandLineArgumentType, 
-    defaultValue: string | number | boolean | null = null, 
-    allowedValues: string[] | number[] | boolean[] | null = null, 
+    defaultValue: T | null, 
+    allowedValues: T[] | null, 
     regularExpression: RegExp | null = null, 
     description: string | null = null) {
-    if (!propertyName) {
-      throw new Error("'propertyName' parameter not defined.")
-    }
-
-    if (required === undefined || required === null) {
-      throw new Error("'required' parameter not defined.")
-    }
 
     if (type !== CommandLineArgumentType.KeyValue && type !== CommandLineArgumentType.Value) {
       throw new Error("'type' parameter invalid.")

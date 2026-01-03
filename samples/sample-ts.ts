@@ -1,12 +1,12 @@
-import { CommandLineDirector, CommandLine, CommandLineArgumentFactory } from '../src/index';
+import { CommandLineDirector, CommandLine, CommandLineArgumentFactory } from 'command-line-director';
 
 // TypeScript sample using the library source directly
 const factory = new CommandLineArgumentFactory();
 
 const commands = [
   new CommandLine('greet', 'Greet', 'Greet someone', [
-    factory.valueArgument('command', 'command', true, ['greet']),
-    factory.keyValueArgument('name', 'name to greet', true, '--name', '-n')
+    factory.stringValueArgument('command', 'command', true, ['greet'] as any),
+    factory.keyStringValueArgument('name', 'name to greet', true, '--name', '-n')
   ])
 ];
 

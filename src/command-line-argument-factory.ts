@@ -14,25 +14,47 @@ export class CommandLineArgumentFactory {
      * @param required - boolean
      * @param argumentName - string
      * @param alias - string
-     * @param defaultValue - any
+     * @param defaultValue - string
      * @param allowedValues
      * @param regularExpression
      */
-    keyValueArgument(
+    keyStringValueArgument(
         propertyName: string, 
         description: string, 
         required: boolean, 
         argumentName: string, 
         alias: string, 
-        defaultValue: string | number | boolean | null = null, 
-        allowedValues: string[] | number[] | boolean[] | null = null, 
+        defaultValue: string | null = null,
+        allowedValues: string[] | null = null, 
         regularExpression: RegExp | null = null) {
-        return new CommandLineArgument(
+        return new CommandLineArgument<string>(
             propertyName,
             required,
             argumentName,
             alias,
             CommandLineArgumentDataType.String,
+            CommandLineArgumentType.KeyValue,
+            defaultValue,
+            allowedValues,
+            regularExpression,
+            description)
+    }
+
+    keyNumberValueArgument(
+        propertyName: string, 
+        description: string, 
+        required: boolean, 
+        argumentName: string, 
+        alias: string, 
+        defaultValue: number | null = null, 
+        allowedValues: number[] | null = null, 
+        regularExpression: RegExp | null = null) {
+        return new CommandLineArgument<number>(
+            propertyName,
+            required,
+            argumentName,
+            alias,
+            CommandLineArgumentDataType.Number,
             CommandLineArgumentType.KeyValue,
             defaultValue,
             allowedValues,
@@ -52,7 +74,7 @@ export class CommandLineArgumentFactory {
      * @param alias - string
      */
     flagArgument(propertyName: string, description: string, argumentName: string, alias: string) {
-        return new CommandLineArgument(
+        return new CommandLineArgument<boolean>(
             propertyName,
             false,
             argumentName,
@@ -76,13 +98,13 @@ export class CommandLineArgumentFactory {
      * @param allowedValues
      * @param regularExpression
      */
-    valueArgument(
+    stringValueArgument(
         propertyName: string, 
         description: string, 
         required: boolean, 
-        allowedValues: string[] | number[] | boolean[] | null = null, 
+        allowedValues: string[] | null = null, 
         regularExpression: RegExp | null = null) {
-        return new CommandLineArgument(
+        return new CommandLineArgument<string>(
             propertyName,
             required,
             null,
@@ -94,4 +116,23 @@ export class CommandLineArgumentFactory {
             regularExpression,
             description)
     }
+
+    numberValueArgument(
+        propertyName: string, 
+        description: string, 
+        required: boolean, 
+        allowedValues: number[] | null = null, 
+        regularExpression: RegExp | null = null) {
+        return new CommandLineArgument<number>(
+            propertyName,
+            required,
+            null,
+            null,
+            CommandLineArgumentDataType.Number,
+            CommandLineArgumentType.Value,
+            null,
+            allowedValues,
+            regularExpression,
+            description)
+    }    
 }
