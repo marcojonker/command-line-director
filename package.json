@@ -1,6 +1,6 @@
 {
   "name": "command-line-director",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "Gives direction to you nodejs command line application",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -48,8 +48,7 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
-  ,
+  },
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
