@@ -97,7 +97,7 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
 
-      - name: Run prepare
+      - name: Run changelog
         run: npm run changelog
 
       - name: Publish to npm
@@ -132,6 +132,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git commit -m "CHANGELOG.md" -m "CHANGELOG.md"
           git push --follow-tags origin HEAD:refs/heads/master
 
       - name: Create GitHub release
