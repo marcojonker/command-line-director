@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.0.0-beta.5 - 2026-02-12
+- update release notes [23d5f01]
+- chore(release): 2.0.0-beta.5 [ea94cc4]
+- changelog [f133e17]
+
 ## v2.0.0-beta.4 - 2026-02-12
 - add changelog generation [9685ac9]
 - chore(release): 2.0.0-beta.4 [401a87d]
@@ -19,11 +24,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.0.2 - 2025-11-30
 - fix vulnerabilities [00f2820]
-- update changelog [ce3bd48]
-
-## 1.0.1 - 2023-11-18
 - update versions [55ede63]
-- bump versions [5c75831]
+- update changelog [ce3bd48]
 
 ## 1.0.0 - 2021-09-26
 - initial commit [915845e]
