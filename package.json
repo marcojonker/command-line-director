@@ -15,7 +15,7 @@
   "bugs": "https://github.com/marcojonker/command-line-director/issues",
   "license": "MIT",
   "scripts": {
-    "changelog": "auto-changelog --hide-empty-releases --template changelog-template.hbs -p && git add CHANGELOG",
+    "changelog": "auto-changelog --hide-empty-releases --template changelog-template.hbs -p && git add CHANGELOG.md",
     "build": "tsup src/index.ts --format cjs,esm --dts --out-dir dist",
     "prepare": "npm run build",
     "test": "jest --coverage",
