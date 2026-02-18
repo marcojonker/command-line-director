@@ -71,9 +71,9 @@ jobs:
           git config user.name "$GIT_AUTHOR_NAME"
           git config user.email "$GIT_AUTHOR_EMAIL"
           if [ "$RELEASE_TYPE" = "beta" ]; then
-            npm version prerelease --preid=beta -m "chore(release): %s"
+            npm version prerelease --preid=beta -m "release: %s"
           else
-            npm version "$RELEASE_TYPE" -m "chore(release): %s"
+            npm version "$RELEASE_TYPE" -m "release: %s"
           fi
 
       - name: Ensure NPM token is available
