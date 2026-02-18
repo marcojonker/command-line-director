@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.0.0 - 2026-02-18
+- CHANGELOG.md [6c65b01]
+- release: 2.0.0 [d4a502f]
+- update version info in release pipeline [87c12a5]
+
 ## v2.0.0-beta.5 - 2026-02-12
 - update release notes [23d5f01]
 - chore(release): 2.0.0-beta.5 [ea94cc4]
