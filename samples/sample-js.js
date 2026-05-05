@@ -1,12 +1,12 @@
-// Simple CommonJS sample that uses the built bundle in `dist/`
+// Simple ESM sample that uses the built bundle in `dist/`
 import { CommandLineDirector, CommandLine, CommandLineArgumentFactory } from 'command-line-director';
 
 const argFactory = new CommandLineArgumentFactory();
 
 const commands = [
   new CommandLine('greet', 'Greet', 'Greet someone', [
-    argFactory.valueArgument('command', 'command', true, ['greet']),
-    argFactory.keyValueArgument('name', 'name to greet', true, '--name', '-n')
+    argFactory.stringValueArgument('command', 'command', true, ['greet']),
+    argFactory.keyStringValueArgument('name', 'name to greet', true, '--name', '-n')
   ])
 ];
 

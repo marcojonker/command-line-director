@@ -48,7 +48,7 @@ Sample of creating a value argument:
 
 ```
 const argumentFactory = new CommandLineArgumentFactory()
-argumentFactory.keyValueArgument('testValue', 'Used for testing', true, '--test-value', '-tv', ['test1', 'test2'], new RegEx('^A-Z*$'))
+argumentFactory.keyStringValueArgument('testValue', 'Used for testing', true, '--test-value', '-tv', null, ['test1', 'test2'], new RegExp('^A-Z*$'))
 ```
 
 ### Flag argument ###
@@ -81,7 +81,7 @@ Sample of creating a value argument:
 
 ```
 const argumentFactory = new CommandLineArgumentFactory()
-argumentFactory.valueArgument('testValue', 'Used for testing', true, ['test1', 'test2'], new RegEx('^A-Z*$'))
+argumentFactory.stringValueArgument('testValue', 'Used for testing', true, ['test1', 'test2'], new RegExp('^A-Z*$'))
 ```
 
 # Sample #
@@ -93,9 +93,7 @@ This is an example that can handle the following commands:
 * node ./samples/app.js cf -rs -f="from-path" -t="to-path"
 
 ```
-const CommandLineDirector = require('../lib/command-line-director')
-const CommandLine = require('../lib/command-line')
-const CommandLineArgumentFactory = require('../lib/command-line-argument-factory')
+const { CommandLineDirector, CommandLine, CommandLineArgumentFactory } = require('../dist/index.js')
 
 class App {
     constructor() {
@@ -104,21 +102,21 @@ class App {
         const commandLines = [
             // node ./samples/app ?
             new CommandLine('help-identifier', 'Help', 'Show help', [
-                argumentFactory.valueArgument('command', '?', true, ['?']),
+                argumentFactory.stringValueArgument('command', '?', true, ['?']),
             ]),
             // node ./samples/app.js open "from-path"
             new CommandLine('open-identifier', 'Open', 'Open a file', [
-                argumentFactory.valueArgument('command', 'Open command', true, ['open']),
-                argumentFactory.valueArgument('fileName', 'Name of the file to open', true),
+                argumentFactory.stringValueArgument('command', 'Open command', true, ['open']),
+                argumentFactory.stringValueArgument('fileName', 'Name of the file to open', true),
             ]),
             // node ./samples/app.js cf --from="from-path" -to="to-path"
             // node ./samples/app.js cf --remove-source --from="from-path" -to="to-path"
             // node ./samples/app.js cf -rs -f="from-path" -t="to-path"
             new CommandLine('copy-file-identifier', 'Copy', 'Copy a file', [
-                argumentFactory.valueArgument('command', 'Copy file command', true, ['cf']),
+                argumentFactory.stringValueArgument('command', 'Copy file command', true, ['cf']),
                 argumentFactory.flagArgument('removeSource', 'Remove the source file', '--remove-source', '-rs'),
-                argumentFactory.keyValueArgument('from', 'From path', true, '--from', '-f'),
-                argumentFactory.keyValueArgument('to', 'To path', true, '--to', '-t'),
+                argumentFactory.keyStringValueArgument('from', 'From path', true, '--from', '-f'),
+                argumentFactory.keyStringValueArgument('to', 'To path', true, '--to', '-t'),
             ]),
         ]
 

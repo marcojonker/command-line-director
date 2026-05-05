@@ -196,4 +196,29 @@ describe('Integration test', function () {
     expect(command?.values.get('all')).toBe(true);
     expect(command?.values.get('id')).toBe('100');
   });    
+
+  it('should handle helloworld command correctly', () => {
+    const commandLines = [
+      new CommandLine('helloworld-identifier', 'HelloWorld', 'Print a hello world message', [
+        argumentFactory.stringValueArgument('command', 'Hello world command', true, ['helloworld']),
+        argumentFactory.keyStringValueArgument('name', 'Name to greet', false, '--name', '-n'),
+      ]),
+    ];
+
+    const director = new CommandLineDirector('Test CLI', 'Test description', commandLines);
+
+    let cmd = director.parseArguments(['helloworld'], true);
+    expect(cmd?.identifier).toBe('helloworld-identifier');
+    expect(cmd?.values.get('command')).toBe('helloworld');
+    expect(cmd?.values.has('name')).toBe(false);
+
+    cmd = director.parseArguments(['helloworld', '--name=Alice'], true);
+    expect(cmd?.values.get('name')).toBe('Alice');
+
+    cmd = director.parseArguments(['helloworld', '-n=Bob'], true);
+    expect(cmd?.values.get('name')).toBe('Bob');
+
+    cmd = director.parseArguments(['unknown'], true);
+    expect(cmd).toBe(null);
+  });
 });
