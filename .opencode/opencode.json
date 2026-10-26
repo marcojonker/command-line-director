@@ -10,7 +10,10 @@
       },
       "models": {
         "mistral-small-latest": {
-          "name": "Mistral Small 4"
+          "name": "Mistral Small 4",
+          "options": {
+            "reasoningEffort": "none"
+          }
         }
       }
     }
