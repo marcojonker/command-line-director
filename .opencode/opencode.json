@@ -1,5 +1,6 @@
 {
-  "providers": {
+  "$schema": "https://opencode.ai/config.json",    
+  "provider": {
     "mistral": {
       "provider": "@ai-sdk/openai-compatible",
       "baseURL": "https://mistral.ai",
