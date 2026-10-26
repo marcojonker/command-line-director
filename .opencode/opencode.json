@@ -1,0 +1,14 @@
+{
+  "providers": {
+    "mistral": {
+      "provider": "@ai-sdk/openai-compatible",
+      "baseURL": "https://mistral.ai",
+      "apiKey": "{env:MISTRAL_API_KEY}",
+      "models": [
+        "codestral-latest",
+        "mistral-small-latest"
+      ]
+    }
+  },
+  "defaultModel": "mistral:codestral-latest"
+}
