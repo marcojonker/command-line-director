@@ -2,14 +2,17 @@
   "$schema": "https://opencode.ai/config.json",    
   "provider": {
     "mistral": {
-      "provider": "@ai-sdk/openai-compatible",
-      "baseURL": "https://mistral.ai",
-      "apiKey": "{env:MISTRAL_API_KEY}",
-      "models": [
-        "codestral-latest",
-        "mistral-small-latest"
-      ]
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Mistral AI",
+      "options": {
+        "baseURL": "https://api.mistral.ai/v1",
+        "apiKey": "{env:API_KEY}"
+      },
+      "models": {
+        "mistral-small-latest": {
+          "name": "Mistral Small 4"
+        }
+      }
     }
-  },
-  "defaultModel": "mistral:codestral-latest"
+  }
 }
