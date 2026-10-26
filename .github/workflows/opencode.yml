@@ -1,4 +1,3 @@
-.github/workflows/opencode-review.yml
 name: opencode-review
 
 on:
