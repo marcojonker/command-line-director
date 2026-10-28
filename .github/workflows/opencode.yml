@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - uses: anomalyco/opencode/github@latest
         env:
@@ -24,6 +25,26 @@ jobs:
         with:
           model: mistral/mistral-small-latest
           agent: reviewer
-          prompt: |
-            Review this pull request. Follow the review agent's
-            instructions and required output format exactly.
+          prompt:  |
+            You are reviewing a GitHub pull request.
+
+            PR base SHA: ${{ github.event.pull_request.base.sha }}
+            PR head SHA: ${{ github.event.pull_request.head.sha }}
+
+            Review ONLY the changes between those two commits.
+
+            First, inspect the diff using:
+            git diff --no-ext-diff --unified=60 \
+              ${{ github.event.pull_request.base.sha }} \
+              ${{ github.event.pull_request.head.sha }}
+
+            Do not search for the diff using alternative refs.
+            Do not inspect your own workflow or agent configuration
+            unless a changed line directly requires it.
+            Do not modify any files.
+
+            If the diff command fails, report the failure and stop.
+            If the diff is empty, verify the commit SHAs before
+            reporting that there are no changes.
+
+            Follow the output format defined in the reviewer agent.
