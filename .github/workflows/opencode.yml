@@ -1,0 +1,50 @@
+name: opencode-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: anomalyco/opencode/github@latest
+        env:
+          API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          OPENCODE_CONFIG_CONTENT: '{"default_agent":"reviewer"}'
+        with:
+          model: mistral/mistral-small-latest
+          agent: reviewer
+          prompt:  |
+            You are reviewing a GitHub pull request.
+
+            PR base SHA: ${{ github.event.pull_request.base.sha }}
+            PR head SHA: ${{ github.event.pull_request.head.sha }}
+
+            Review ONLY the changes between those two commits.
+
+            First, inspect the diff using:
+            git diff --no-ext-diff --unified=60 \
+              ${{ github.event.pull_request.base.sha }} \
+              ${{ github.event.pull_request.head.sha }}
+
+            Do not search for the diff using alternative refs.
+            Do not inspect your own workflow or agent configuration
+            unless a changed line directly requires it.
+            Do not modify any files.
+
+            If the diff command fails, report the failure and stop.
+            If the diff is empty, verify the commit SHAs before
+            reporting that there are no changes.
+
+            Follow the output format defined in the reviewer agent.
