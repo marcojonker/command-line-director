@@ -23,5 +23,3 @@ jobs:
         with:
           model: mistral/mistral-small-latest
           agent: reviewer
-          prompt: |
-            Review this pull request
