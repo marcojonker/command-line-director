@@ -23,3 +23,14 @@ jobs:
         with:
           model: mistral/mistral-small-latest
           agent: reviewer
+          prompt:  |
+            Review this pull request using the review agent's instructions.
+
+            Follow the exact output format defined in the agent, including:
+            - Severity and title
+            - Filename and line numbers
+            - Problem, impact, and suggested fix
+            - Final verdict and finding counts
+
+            Do not return a generic summary. Do not invent filenames or
+            line numbers. If there are no actionable findings, say so.
