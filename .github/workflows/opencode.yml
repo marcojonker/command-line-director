@@ -22,8 +22,6 @@ jobs:
           API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         with:
           model: mistral/mistral-small-latest
+          agent: reviewer
           prompt: |
-            Review this pull request:
-            - Check for code quality issues
-            - Look for potential bugs
-            - Suggest improvements
+            Review this pull request
