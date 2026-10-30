@@ -56,6 +56,10 @@ Rules:
 - Sort findings by severity: CRITICAL, HIGH, MEDIUM, LOW.
 - If there are no actionable findings, output:
   "No actionable findings."
+- suggestions should be formatted like:
+```suggestion
+<suggested code>
+```  
 
 Finish with:
 
