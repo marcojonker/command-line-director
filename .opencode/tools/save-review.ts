@@ -43,7 +43,7 @@ export default tool({
     ),
   },
 
-  async execute(args, context) {
+  async execute(args: any, context: any) {
     // Validate the complete object against the strict schema.
     const review = ReviewSchema.parse(args.review)
 
@@ -83,7 +83,7 @@ export default tool({
       if (
         finding.body_lines.length === 0 ||
         finding.body_lines.some(
-          (line) => line.includes("\n") || line.includes("\r")
+          (line: string) => line.includes("\n") || line.includes("\r")
         )
       ) {
         throw new Error(
@@ -94,7 +94,7 @@ export default tool({
 
     // The verdict is deterministic: CRITICAL/HIGH requires changes.
     const requiresChanges = review.findings.some(
-      (finding) =>
+      (finding: any) =>
         finding.severity === "CRITICAL" ||
         finding.severity === "HIGH"
     )

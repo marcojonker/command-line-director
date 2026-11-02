@@ -16,7 +16,7 @@ permission:
   question: deny
   external_directory: deny
   doom_loop: deny
-  save_review: allow
+  save-review: allow
 ---
 
 # Senior GitHub Pull Request Reviewer

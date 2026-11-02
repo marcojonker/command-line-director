@@ -56,9 +56,9 @@ jobs:
       - name: Verify structured review writer
         shell: bash
         run: |
-          if [ ! -f .opencode/tools/save_review.ts ]; then
-            echo "::error::.opencode/tools/save_review.ts is missing"
-            echo "Add the dedicated save_review custom tool to the repository."
+          if [ ! -f .opencode/tools/save-review.ts ]; then
+            echo "::error::.opencode/tools/save-review.ts is missing"
+            echo "Add the dedicated save-review custom tool to the repository."
             exit 1
           fi
 
@@ -121,18 +121,18 @@ jobs:
           PROMPT=$(cat <<'EOF'
           Perform a complete review of this GitHub pull request.
 
-          Follow all instructions in the reviewer agent.
+          Follow all instructions in the github-reviewer agent.
 
           Inspect every changed file and relevant surrounding code.
           Use the attached PR diff as the source of truth.
 
           Construct the complete review as structured data and save it
-          by calling the save_review custom tool.
+          by calling the save-review custom tool.
 
           Do not use built-in file-writing tools to create findings.json.
           Do not manually construct JSON.
           Do not use shell commands for serialization.
-          If save_review is unavailable or fails, report the failure.
+          If save-review is unavailable or fails, report the failure.
           Never claim that the findings file was saved unless the tool
           confirms success.
 
@@ -143,7 +143,7 @@ jobs:
           )
 
           opencode run "$PROMPT" \
-            --agent reviewer \
+            --agent github-reviewer \
             --model "mistral/mistral-small-latest" \
             --file .review/pr.diff \
             --file .review/pr-metadata.json

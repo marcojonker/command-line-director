@@ -1,13 +1,14 @@
 import { CommandLine } from './command-line';
 import { Command } from './command';
 import { ArgumentLookup } from './argument-lookup';
+import process from 'process';
 
 export class CommandLineDirector {
   private title: string;
   private description: string;
   private commandLines: CommandLine[];
 
-constructor (title: string, description: string, commandLines: CommandLine[]) {
+  constructor (title: string, description: string, commandLines: CommandLine[]) {
     this.title = title
     this.description = description
     if (Array.isArray(commandLines)) {
