@@ -125,8 +125,8 @@ jobs:
           )
 
           opencode run "$PROMPT" \
-            --agent code-reviewer \
-            --model "$OPENCODE_MODEL" \
+            --agent reviewer \
+            --model "mistral/mistral-small-latest" \
             --file .review/pr.diff \
             --file .review/pr-metadata.json
 
