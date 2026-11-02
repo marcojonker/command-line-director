@@ -100,7 +100,7 @@ jobs:
 
       - name: Run OpenCode code reviewer
         env:
-          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         shell: bash
         run: |
           PROMPT=$(cat <<'EOF'
