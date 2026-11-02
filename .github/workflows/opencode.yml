@@ -271,11 +271,14 @@ jobs:
                 );
               }
 
+
               const comment = {
                 path: finding.path,
                 line,
                 side: 'RIGHT',
-                body: finding.body
+                body: Array.isArray(finding.body_lines)
+                    ? finding.body_lines.join("\n")
+                    : finding.body
               };
 
               if (startLine !== line) {

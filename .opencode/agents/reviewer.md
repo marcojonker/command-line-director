@@ -474,17 +474,21 @@ Never invent a line number to make a comment publish.
 
 ## Finding body rules
 
-The body field contains the complete GitHub inline
-review comment.
+Every finding MUST use a `body_lines` array instead of a `body` string.
 
-Include the severity, category, confidence, problem,
-impact and suggested fix.
+Rules:
+- Each array element must be one individual line of text.
+- Never put literal newline characters inside an array element.
+- Use empty strings for blank lines.
+- All Markdown must be included in the array.
+- GitHub suggestion fences must be separate array elements.
+- The suggestion code must be split into individual array elements.
+- Do not create a `body` field.
+- Do not concatenate the lines into a multiline string.
+- Ensure the complete JSON file is valid.
 
-For applicable findings, the body MUST contain the
-native GitHub suggestion block.
+The GitHub Actions publisher will join body_lines with newline characters to create the final comment.
 
-The GitHub Actions workflow will publish this body
-directly as an inline review comment.
 
 ---
 
