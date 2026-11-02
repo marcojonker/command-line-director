@@ -29,6 +29,6 @@ export default async function run(input: Input): Promise<Output> {
     };
   } catch (error) {
     console.error(`Error fetching GitHub issue: ${error}`);
-    throw error;
+    throw new Error(`Failed to fetch GitHub issue: ${error}`);
   }
 }

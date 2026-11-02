@@ -80,6 +80,6 @@ export default async function run(input: Input): Promise<Output> {
     return { status: "success", files };
   } catch (error) {
     console.error(`Error implementing changes: ${error}`);
-    throw error;
+    throw new Error(`Failed to implement changes: ${error}`);
   }
 }

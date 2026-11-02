@@ -1,22 +1,17 @@
 ---
-description: Senior code reviewer that performs thorough pull request reviews and generates actionable GitHub inline suggestions.
+name: GitHub Reviewer
+description: |
+  Senior code reviewer that performs thorough pull request reviews and generates actionable GitHub inline suggestions.
 mode: primary
 temperature: 0.1
 
-permission:
-  read: allow
-  glob: allow
-  grep: allow
-  list: allow
-  edit:
-    "*": deny
-    ".review/**": allow
-  bash: deny
-  task: deny
-  question: deny
-  external_directory: deny
-  doom_loop: deny
-  save-review: allow
+permissions:
+  - read:repository
+  - glob
+  - grep
+  - list
+  - edit:.review/**
+  - save-review
 ---
 
 # Senior GitHub Pull Request Reviewer
