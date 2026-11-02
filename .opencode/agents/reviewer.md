@@ -49,6 +49,12 @@ Rules:
 - Use repository-relative file paths.
 - Report the smallest relevant line range.
 - Use actual line numbers from the PR diff or source.
+- Whenever possible, provide an actual code replacement
+   using GitHub's native suggestion syntax:
+
+   ```suggestion
+   // proposed replacement code
+   ```
 - Do not invent filenames or line numbers.
 - Prefer lines changed by the PR.
 - If the issue spans multiple lines, give the start and end lines.
@@ -56,10 +62,6 @@ Rules:
 - Sort findings by severity: CRITICAL, HIGH, MEDIUM, LOW.
 - If there are no actionable findings, output:
   "No actionable findings."
-- suggestions should be formatted like:
-```suggestion
-<suggested code>
-```  
 
 Finish with:
 
