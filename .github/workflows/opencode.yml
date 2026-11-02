@@ -103,30 +103,32 @@ jobs:
           API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         shell: bash
         run: |
-          opencode run \
-            --agent reviewer \
-            --model "mistral/mistral-small-latest" \
+          PROMPT=$(cat <<'EOF'
+          Perform a complete review of this GitHub pull request.
+
+          Follow all instructions in the code-reviewer agent.
+
+          Inspect every changed file and relevant surrounding code.
+
+          Use the attached PR diff as the source of truth.
+
+          Generate the complete machine-readable review at:
+          .review/findings.json
+
+          Do not modify application source files.
+          Do not publish GitHub comments yourself.
+
+          The GitHub Actions workflow will publish the findings.
+
+          Make sure the JSON is complete and valid.
+          EOF
+          )
+
+          opencode run "$PROMPT" \
+            --agent code-reviewer \
+            --model "$OPENCODE_MODEL" \
             --file .review/pr.diff \
-            --file .review/pr-metadata.json \
-            "Perform a complete review of this GitHub pull request.
-
-            Follow all instructions in the code-reviewer agent.
-
-            Inspect every changed file and relevant surrounding code.
-
-            Use the attached PR diff as the source of truth.
-
-            Generate the complete machine-readable review at:
-
-            .review/findings.json
-
-            Do not modify application source files.
-
-            Do not publish GitHub comments yourself.
-
-            The GitHub Actions workflow will publish the findings.
-
-            Make sure the JSON is complete and valid."
+            --file .review/pr-metadata.json
 
       # --------------------------------------------------
       # 5. Validate the agent output
