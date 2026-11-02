@@ -410,6 +410,7 @@ Use exactly this structure:
   ]
 }
 
+
 ## JSON rules
 
 - The output MUST be valid, strict JSON.
@@ -425,6 +426,24 @@ Use exactly this structure:
 - Use uppercase severity values.
 - Use APPROVE or REQUEST_CHANGES as verdict.
 - Keep the findings array empty when there are no findings.
+
+ ## Strict JSON Generation
+
+You MUST generate the findings file using a structured JSON serialization method.
+
+Do not manually construct JSON using Markdown text or multiline string templates.
+
+Use this process:
+
+1. Build the complete review as structured data.
+2. Serialize the complete object as JSON.
+3. Write the serialized JSON to `.review/findings.json`.
+4. Do not include Markdown code fences around the JSON file.
+5. Use `body_lines` as an array of individual strings.
+6. Never include literal control characters inside JSON strings.
+7. Do not write the file until the complete JSON object is ready.
+
+The final file must be valid JSON.
 
 ### Critical string formatting requirement
 
