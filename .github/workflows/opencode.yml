@@ -1,50 +1,353 @@
-name: opencode-review
+name: OpenCode AI Code Review
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+# Cancel an older review when a new commit arrives.
+concurrency:
+  group: opencode-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   review:
+    name: AI Code Review
+
+    # This version is configured for PRs from the same repository.
+    # See the fork PR note below.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     permissions:
       contents: read
-      pull-requests: read
-      issues: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-          fetch-depth: 0
+      pull-requests: write
 
-      - uses: anomalyco/opencode/github@latest
+    steps:
+
+      # --------------------------------------------------
+      # 1. Checkout the actual PR commit
+      # --------------------------------------------------
+
+      - name: Checkout pull request
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      # --------------------------------------------------
+      # 2. Install OpenCode
+      # --------------------------------------------------
+
+      - name: Install OpenCode
+        shell: bash
+        run: |
+          curl -fsSL https://opencode.ai/install | bash
+          echo "$HOME/.opencode/bin" >> "$GITHUB_PATH"
+
+      # --------------------------------------------------
+      # 3. Retrieve PR diff and metadata
+      # --------------------------------------------------
+
+      - name: Prepare review context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          mkdir -p .review
+
+          gh pr diff "$PR_NUMBER" \
+            --repo "$REPOSITORY" \
+            > .review/pr.diff
+
+          if [ ! -s .review/pr.diff ]; then
+            echo "Pull request diff is empty or unavailable."
+            exit 1
+          fi
+
+          jq -n \
+            --arg repository "$REPOSITORY" \
+            --arg number "$PR_NUMBER" \
+            --arg title "$PR_TITLE" \
+            --arg head "$PR_HEAD_SHA" \
+            --arg base "$PR_BASE_SHA" \
+            --arg author "$PR_AUTHOR" \
+            '{
+              repository: $repository,
+              pull_request: ($number | tonumber),
+              title: $title,
+              head_sha: $head,
+              base_sha: $base,
+              author: $author
+            }' > .review/pr-metadata.json
+
+          echo "PR diff prepared successfully."
+
+      # --------------------------------------------------
+      # 4. Run the OpenCode review agent
+      # --------------------------------------------------
+
+      - name: Run OpenCode code reviewer
         env:
           API_KEY: ${{ secrets.MISTRAL_API_KEY }}
-          OPENCODE_CONFIG_CONTENT: '{"default_agent":"reviewer"}'
+        shell: bash
+        run: |
+          opencode run \
+            --agent reviewer \
+            --model "mistral/mistral-small-latest" \
+            --file .review/pr.diff \
+            --file .review/pr-metadata.json \
+            "Perform a complete review of this GitHub pull request.
+
+            Follow all instructions in the code-reviewer agent.
+
+            Inspect every changed file and relevant surrounding code.
+
+            Use the attached PR diff as the source of truth.
+
+            Generate the complete machine-readable review at:
+
+            .review/findings.json
+
+            Do not modify application source files.
+
+            Do not publish GitHub comments yourself.
+
+            The GitHub Actions workflow will publish the findings.
+
+            Make sure the JSON is complete and valid."
+
+      # --------------------------------------------------
+      # 5. Validate the agent output
+      # --------------------------------------------------
+
+      - name: Validate review JSON
+        shell: bash
+        run: |
+          if [ ! -f .review/findings.json ]; then
+            echo "Review agent did not generate findings.json"
+            exit 1
+          fi
+
+          jq -e '
+            type == "object" and
+            (.summary | type == "string") and
+            (.compliment | type == "string") and
+            (.joke | type == "string") and
+            (.verdict == "APPROVE" or
+             .verdict == "REQUEST_CHANGES") and
+            (.findings | type == "array") and
+            all(.findings[];
+              (.severity == "CRITICAL" or
+               .severity == "HIGH" or
+               .severity == "MEDIUM" or
+               .severity == "LOW") and
+              (.path | type == "string" and length > 0) and
+              (.line | type == "number" and . > 0 and floor == .) and
+              ((.start_line // .line) |
+                type == "number" and . > 0 and floor == .) and
+              (.body | type == "string" and length > 0)
+            )
+          ' .review/findings.json > /dev/null
+
+          echo "Review JSON is valid."
+
+      # --------------------------------------------------
+      # 6. Publish native GitHub inline suggestions
+      # --------------------------------------------------
+
+      - name: Publish GitHub inline review
+        uses: actions/github-script@v7
+        env:
+          REVIEW_FILE: .review/findings.json
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         with:
-          model: mistral/mistral-small-latest
-          agent: reviewer
-          prompt:  |
-            You are reviewing a GitHub pull request.
+          script: |
+            const fs = require('fs');
 
-            PR base SHA: ${{ github.event.pull_request.base.sha }}
-            PR head SHA: ${{ github.event.pull_request.head.sha }}
+            const review = JSON.parse(
+              fs.readFileSync(process.env.REVIEW_FILE, 'utf8')
+            );
 
-            Review ONLY the changes between those two commits.
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.issue.number;
 
-            First, inspect the diff using:
-            git diff --no-ext-diff --unified=60 \
-              ${{ github.event.pull_request.base.sha }} \
-              ${{ github.event.pull_request.head.sha }}
+            // Verify that the PR has not changed while reviewing.
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number
+            });
 
-            Do not search for the diff using alternative refs.
-            Do not inspect your own workflow or agent configuration
-            unless a changed line directly requires it.
-            Do not modify any files.
+            if (pr.head.sha !== process.env.EXPECTED_HEAD_SHA) {
+              core.setFailed(
+                'PR changed during review. A new review is required.'
+              );
+              return;
+            }
 
-            If the diff command fails, report the failure and stop.
-            If the diff is empty, verify the commit SHAs before
-            reporting that there are no changes.
+            // Retrieve changed files and their actual diff hunks.
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner,
+                repo,
+                pull_number,
+                per_page: 100
+              }
+            );
 
-            Follow the output format defined in the reviewer agent.
+            // Build valid RIGHT-side line references from each diff.
+            const validLines = new Map();
+
+            for (const file of files) {
+              const lines = new Set();
+
+              if (file.patch) {
+                let newLine = null;
+
+                for (const diffLine of file.patch.split('\n')) {
+                  const hunk = diffLine.match(
+                    /^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/
+                  );
+
+                  if (hunk) {
+                    newLine = Number(hunk[1]);
+                    continue;
+                  }
+
+                  if (newLine === null) continue;
+
+                  if (diffLine.startsWith('+') &&
+                      !diffLine.startsWith('+++')) {
+                    lines.add(newLine);
+                    newLine++;
+                  } else if (diffLine.startsWith(' ') ) {
+                    lines.add(newLine);
+                    newLine++;
+                  } else if (
+                    diffLine.startsWith('-') &&
+                    !diffLine.startsWith('---')
+                  ) {
+                    // Deleted lines do not advance RIGHT-side lines.
+                  }
+                }
+              }
+
+              validLines.set(file.filename, lines);
+            }
+
+            // Convert findings into GitHub review comments.
+            const comments = [];
+
+            for (const finding of review.findings) {
+              const fileLines = validLines.get(finding.path);
+
+              if (!fileLines) {
+                throw new Error(
+                  `Finding references a file outside the PR diff: ${finding.path}`
+                );
+              }
+
+              const line = finding.line;
+              const startLine = finding.start_line ?? line;
+
+              if (
+                !fileLines.has(line) ||
+                !fileLines.has(startLine) ||
+                startLine > line
+              ) {
+                throw new Error(
+                  `Invalid PR diff line reference: ${finding.path}:${line}`
+                );
+              }
+
+              const comment = {
+                path: finding.path,
+                line,
+                side: 'RIGHT',
+                body: finding.body
+              };
+
+              if (startLine !== line) {
+                comment.start_line = startLine;
+                comment.start_side = 'RIGHT';
+              }
+
+              comments.push(comment);
+            }
+
+            // Count findings by severity.
+            const counts = {
+              CRITICAL: 0,
+              HIGH: 0,
+              MEDIUM: 0,
+              LOW: 0
+            };
+
+            for (const finding of review.findings) {
+              counts[finding.severity]++;
+            }
+
+            // Build the general PR review summary.
+            const summary = [
+              `## ${review.compliment}`,
+              '',
+              review.joke,
+              '',
+              '## Review Summary',
+              '',
+              review.summary,
+              '',
+              `**Verdict:** ${review.verdict}`,
+              '',
+              '### Findings',
+              '',
+              `- CRITICAL: ${counts.CRITICAL}`,
+              `- HIGH: ${counts.HIGH}`,
+              `- MEDIUM: ${counts.MEDIUM}`,
+              `- LOW: ${counts.LOW}`,
+              `- TOTAL: ${review.findings.length}`,
+              '',
+              '---',
+              '',
+              'Individual findings are attached to the relevant code lines.'
+            ].join('\n');
+
+            // Publish everything as one GitHub review.
+            // APPROVE verdicts use COMMENT to avoid automatically
+            // approving a PR without a human decision.
+            const event =
+              review.verdict === 'REQUEST_CHANGES'
+                ? 'REQUEST_CHANGES'
+                : 'COMMENT';
+
+            const result = await github.rest.pulls.createReview({
+              owner,
+              repo,
+              pull_number,
+              commit_id: pr.head.sha,
+              body: summary,
+              event,
+              comments
+            });
+
+            core.info(
+              `Review published: ${result.data.html_url}`
+            );
+
+            core.info(
+              `Inline comments published: ${comments.length}`
+            );
