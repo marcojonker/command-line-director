@@ -7,28 +7,9 @@ export class CommandLineDirector {
   private description: string;
   private commandLines: CommandLine[];
 
--  constructor (title: any, description: any, commandLines: CommandLine[]) {
-+  constructor (title: string, description: string, commandLines: CommandLine[]) {
-  constructor (title: string, description: string, commandLines: CommandLine[]) {
-    this.title = String(title)
-    this.description = String(description)
-    if (Array.isArray(commandLines)) {
-      this.commandLines = commandLines
-    } else {
-      throw new Error("Invalid argument 'commandLines', value should be of type 'array'")
-    }
-  }
-    this.title = String(title)
-    this.description = String(description)
-  if (Array.isArray(commandLines)) {
-    this.commandLines = commandLines
-  } else {
-    throw new Error("Invalid argument 'commandLines', value should be of type 'array'")
-  }
-}
-     this.description = String(description)
-    this.title = String(title)
-    this.description = String(description)
+  constructor (title: any, description: any, commandLines: CommandLine[]) {
+    this.title = title
+    this.description = description
     if (Array.isArray(commandLines)) {
       this.commandLines = commandLines
     } else {
