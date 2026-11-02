@@ -30,7 +30,7 @@ interface Context {
   worktree: string
 }
 
-const severityOrder = {
+const severityOrder: Record<typeof FindingSchema._type.severity, number> = {
   CRITICAL: 0,
   HIGH: 1,
   MEDIUM: 2,
