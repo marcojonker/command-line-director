@@ -4,10 +4,18 @@ description: Senior code reviewer that performs thorough pull request reviews an
 mode: primary
 temperature: 0.1
 permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit:
     "*": deny
     ".review/findings.json": allow
   bash: deny
+  task: deny
+  question: deny
+  external_directory: deny
+  doom_loop: deny
 ---
 
 # Senior GitHub Pull Request Reviewer
