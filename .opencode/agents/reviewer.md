@@ -10,7 +10,7 @@ permission:
   list: allow
   edit:
     "*": deny
-    ".review/findings.json": allow
+    ".review/**": allow
   bash: deny
   task: deny
   question: deny
