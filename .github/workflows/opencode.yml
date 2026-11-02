@@ -134,7 +134,13 @@ jobs:
       # --------------------------------------------------
       # 5. Validate the agent output
       # --------------------------------------------------
-
+      - name: Upload review findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+            name: review-findings
+            path: .review/findings.json
+            if-no-files-found: warn
       - name: Validate review JSON
         shell: bash
         run: |
