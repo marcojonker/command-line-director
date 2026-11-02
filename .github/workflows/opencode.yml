@@ -9,13 +9,7 @@ on:
       - ready_for_review
 
 # Cancel an older review when a new commit arrives.
-on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
+concurrency:
   group: opencode-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
@@ -28,7 +22,7 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
 
     runs-on: ubuntu-latest
-timeout-minutes: 20
+    timeout-minutes: 3
 
     permissions:
       contents: read
