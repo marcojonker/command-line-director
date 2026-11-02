@@ -12,7 +12,8 @@
         "mistral-small-latest": {
           "name": "Mistral Small 4",
           "options": {
-            "reasoningEffort": "none"
+            "reasoningEffort": "none",
+            "apiKey": "{env:API_KEY}"
           }
         }
       }
