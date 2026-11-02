@@ -7,7 +7,10 @@ export class CommandLineDirector {
   private description: string;
   private commandLines: CommandLine[];
 
-  constructor (title: any, description: any, commandLines: CommandLine[]) {
+-  constructor (title: any, description: any, commandLines: CommandLine[]) {
++  constructor (title: string, description: string, commandLines: CommandLine[]) {
+     this.title = String(title)
+     this.description = String(description)
     this.title = String(title)
     this.description = String(description)
     if (Array.isArray(commandLines)) {
