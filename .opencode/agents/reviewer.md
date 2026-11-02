@@ -394,8 +394,11 @@ Use exactly this structure:
 
 ## JSON rules
 
-- Use valid JSON only.
-- Escape newlines and quotation marks correctly.
+- The output MUST be valid, strict JSON.
+- Never put literal newline characters inside JSON string values.
+- Encode every newline inside a string as \n.
+- Escape double quotes inside strings as \".
+- Escape backslashes as \\ where required.
 - Do not include Markdown outside the JSON object.
 - Do not include comments in the JSON.
 - Do not include trailing commas.
@@ -404,6 +407,34 @@ Use exactly this structure:
 - Use uppercase severity values.
 - Use APPROVE or REQUEST_CHANGES as verdict.
 - Keep the findings array empty when there are no findings.
+
+### Critical string formatting requirement
+
+The `body` field contains Markdown, including GitHub suggestion blocks.
+
+All Markdown must remain inside the JSON string.
+
+For example, this is VALID:
+
+{
+  "body": "This causes a type-safety issue.\n\n**Suggested fix**\n\n```suggestion\nconstructor (title: string) {\n  this.title = title\n}\n```"
+}
+
+This is INVALID:
+
+{
+  "body": "This causes a type-safety issue.
+
+**Suggested fix**
+
+```suggestion
+constructor (title: string) {
+  this.title = title
+}
+```"
+}
+
+Never write literal line breaks inside a quoted JSON string.
 
 ## Line number rules
 
@@ -477,6 +508,19 @@ Do not mark the review complete if the diff could not
 be accessed or relevant files could not be inspected.
 
 ---
+
+## Mandatory JSON Serialization Check
+
+Before considering the review complete:
+
+1. Treat every JSON string as a single-line escaped value.
+2. Encode Markdown line breaks inside the `body` field as \n.
+3. Do not copy multiline Markdown directly into a quoted JSON string.
+4. Check that every opening quote has a matching closing quote.
+5. Check that every object and array is properly closed.
+6. Do not report success if the JSON structure is incomplete or invalid.
+
+The final `.review/findings.json` must be strict JSON, not Markdown that resembles JSON.
 
 # 10. No Findings
 
