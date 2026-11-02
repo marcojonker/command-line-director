@@ -1,5 +1,5 @@
 ---
-name: GitHub Reviewer
+name: github-reviewer
 description: |
   Senior code reviewer that performs thorough pull request reviews and generates actionable GitHub inline suggestions.
 mode: primary
