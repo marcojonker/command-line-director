@@ -26,6 +26,10 @@ const ReviewSchema = tool.schema.object({
   findings: tool.schema.array(FindingSchema),
 }).strict()
 
+interface Context {
+  worktree: string
+}
+
 const severityOrder = {
   CRITICAL: 0,
   HIGH: 1,
@@ -43,7 +47,7 @@ export default tool({
     ),
   },
 
-  async execute(args: any, context: any) {
+  async execute(args: { review: typeof ReviewSchema._type }, context: Context) {
     // Validate the complete object against the strict schema.
     const review = ReviewSchema.parse(args.review)
 
@@ -94,7 +98,7 @@ export default tool({
 
     // The verdict is deterministic: CRITICAL/HIGH requires changes.
     const requiresChanges = review.findings.some(
-      (finding: any) =>
+      (finding: typeof FindingSchema._type) =>
         finding.severity === "CRITICAL" ||
         finding.severity === "HIGH"
     )
