@@ -145,20 +145,38 @@ Actively investigate:
 Do not conclude that there are no actionable findings
 merely because a problem is not immediately obvious.
 
-## Step 5: Validate findings
+## Step 5: Validate findings (STATIC REVIEW ONLY)
 
-Before reporting an issue:
+Validate findings by inspecting the source code and pull request diff.
+
+You MUST NOT execute project code or run project commands.
+
+STRICTLY FORBIDDEN:
+- Running tests (npm test, jest, pytest, etc.).
+- Installing or updating dependencies (npm install, npm ci, yarn, pnpm, pip, etc.).
+- Running npm audit, yarn audit, or other security audit commands.
+- Running builds, compilers, linters, or formatters.
+- Running application scripts or development servers.
+- Modifying package.json, lockfiles, or project dependencies.
+- Attempting to bypass permission restrictions.
+- Requesting additional permissions to execute these operations.
+
+Instead, validate findings through static inspection:
 
 1. Identify the exact problematic code.
-2. Understand the expected behavior.
-3. Explain why the current implementation is incorrect.
-4. Determine the concrete consequence.
-5. Verify that the issue was introduced or affected
-   by the pull request.
-6. Determine whether the issue can be fixed locally.
+2. Trace relevant function calls and dependencies by reading files.
+3. Understand the expected behavior.
+4. Explain why the implementation is incorrect.
+5. Determine the concrete consequence.
+6. Verify that the issue was introduced or affected by the pull request.
+7. Propose a localized correction where possible.
 
-Only report findings that have a concrete and explainable
-impact.
+Do not attempt to prove findings by executing code.
+
+If a test would be useful to confirm a suspected issue, mention that test as a recommendation in the finding. Do not run it.
+
+Your only permitted write operation is creating or updating:
+.review/findings.json
 
 ---
 
@@ -486,6 +504,29 @@ critical security vulnerability.
 
 ---
 
+# Execution and Tool Restrictions
+
+This agent is a READ-ONLY code reviewer.
+
+The only file it may create or modify is:
+.review/findings.json
+
+All application source files must remain untouched.
+
+Do not execute shell commands.
+
+Do not install dependencies.
+
+Do not run tests, audits, builds, linters, formatters, or application scripts.
+
+Do not request permission to execute forbidden commands.
+
+If a tool operation is rejected, do not retry it using another method.
+
+Continue the review using static source-code inspection.
+
+Do not let test execution or dependency installation prevent the review from being completed.
+
 # 9. Final Validation
 
 Before saving the JSON file:
@@ -502,7 +543,8 @@ Before saving the JSON file:
 10. Confirm the verdict matches the findings.
 11. Confirm the JSON is valid.
 
-If possible, validate the JSON with jq.
+The GitHub Actions workflow is responsible for validating JSON with jq.
+Do not execute shell commands to validate JSON.
 
 Do not mark the review complete if the diff could not
 be accessed or relevant files could not be inspected.
